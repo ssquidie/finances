@@ -270,6 +270,8 @@ def import_view(request):
             created = 0
             skipped = 0
             last_date = None
+            current_year = year
+            last_month = None
             for row in reader:
                 if len(row) < 5:
                     skipped += 1
@@ -291,7 +293,10 @@ def import_view(request):
                     if parsed is None:
                         try:
                             md = datetime.datetime.strptime(v, '%m/%d')
-                            parsed = datetime.date(year, md.month, md.day)
+                            if last_month is not None and md.month < last_month:
+                                current_year += 1
+                            parsed = datetime.date(current_year, md.month, md.day)
+                            last_month = md.month
                         except ValueError:
                             pass
                 if parsed is not None:
