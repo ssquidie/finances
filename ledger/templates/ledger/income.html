@@ -1,0 +1,40 @@
+{% extends 'ledger/base.html' %}
+{% block content %}
+<h3 style="font-size: 13px; text-transform: uppercase; color: #767C6E;">Net over a range</h3>
+<form method="get" style="display: flex; gap: 8px; align-items: flex-end;">
+  <div>
+    <label>Start</label>
+    <input type="date" name="start" value="{{ start }}">
+  </div>
+  <div>
+    <label>End</label>
+    <input type="date" name="end" value="{{ end }}">
+  </div>
+  <button type="submit" style="margin-top: 4px;">Go</button>
+</form>
+
+<div class="stat"><span>Total income</span>${{ total_profit }}</div>
+<div class="stat"><span>Total spent</span>${{ total_spent }}</div>
+<div class="stat"><span>Net</span>${{ net }}</div>
+
+<details style="margin-top: 26px;">
+  <summary>Log income</summary>
+  <form method="post">
+    {% csrf_token %}
+    <label for="{{ form.date.id_for_label }}">Date</label>
+    {{ form.date }}
+    <label for="{{ form.amount.id_for_label }}">Amount earned</label>
+    {{ form.amount }}
+    <label for="{{ form.note.id_for_label }}">Note (optional)</label>
+    {{ form.note }}
+    <button type="submit">Log income</button>
+  </form>
+</details>
+
+<h3 style="font-size: 13px; text-transform: uppercase; color: #767C6E; margin-top: 26px;">Recent income</h3>
+{% for p in profits %}
+  <div class="row"><span>{{ p.date }} — {{ p.note|default:"income" }}</span><span class="row-right">${{ p.amount }} <a class="edit-link" href="{% url 'profit_edit' p.pk %}">edit</a></span></div>
+{% empty %}
+  <p>No income logged yet.</p>
+{% endfor %}
+{% endblock %}

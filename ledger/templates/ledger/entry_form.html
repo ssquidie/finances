@@ -1,0 +1,20 @@
+{% extends 'ledger/base.html' %}
+{% block content %}
+<form method="post">
+  {% csrf_token %}
+  <label for="{{ form.date.id_for_label }}">Date</label>
+  {{ form.date }}
+  <label for="{{ form.description.id_for_label }}">Description</label>
+  {{ form.description }}
+  <label for="{{ form.cost.id_for_label }}">Cost</label>
+  {{ form.cost }}
+  <button type="submit">Log it</button>
+</form>
+
+{% if recent %}
+<h3 style="font-size: 13px; text-transform: uppercase; color: #767C6E; margin-top: 30px;">Just logged</h3>
+{% for e in recent %}
+  <div class="row"><span>{{ e.date }} — {{ e.description }}</span><span class="row-right">${{ e.cost }} <a class="edit-link" href="{% url 'entry_edit' e.pk %}">edit</a></span></div>
+{% endfor %}
+{% endif %}
+{% endblock %}

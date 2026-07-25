@@ -1,0 +1,16 @@
+{% extends 'ledger/base.html' %}
+{% block content %}
+{% for week in weeks %}
+  <button class="week-header month-{{ week.month }}" id="hdr-{{ forloop.counter }}" onclick="toggleWeek('wk-{{ forloop.counter }}', 'hdr-{{ forloop.counter }}')">
+    <span>{{ week.label }}</span>
+    <span class="week-right">${{ week.total }} <span class="arrow">&#9662;</span></span>
+  </button>
+  <div class="week-body" id="wk-{{ forloop.counter }}">
+    {% for item in week.items %}
+      <div class="row"><span>{{ item.date }} — {{ item.description }}</span><span class="row-right">${{ item.cost }} <a class="edit-link" href="{% url 'entry_edit' item.pk %}">edit</a></span></div>
+    {% endfor %}
+  </div>
+{% empty %}
+  <p>Nothing logged yet.</p>
+{% endfor %}
+{% endblock %}

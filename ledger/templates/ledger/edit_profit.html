@@ -1,0 +1,19 @@
+{% extends 'ledger/base.html' %}
+{% block content %}
+<h3 style="font-size: 13px; text-transform: uppercase; color: #767C6E;">Edit income</h3>
+<form method="post">
+  {% csrf_token %}
+  <label for="{{ form.date.id_for_label }}">Date</label>
+  {{ form.date }}
+  <label for="{{ form.amount.id_for_label }}">Amount earned</label>
+  {{ form.amount }}
+  <label for="{{ form.note.id_for_label }}">Note</label>
+  {{ form.note }}
+  <button type="submit">Save changes</button>
+</form>
+<form method="post" style="margin-top: 10px;" onsubmit="return confirm('Delete this income entry?');">
+  {% csrf_token %}
+  <input type="hidden" name="delete" value="1">
+  <button type="submit" style="background: #A9382F;">Delete entry</button>
+</form>
+{% endblock %}

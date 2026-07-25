@@ -1,0 +1,19 @@
+{% extends 'ledger/base.html' %}
+{% block content %}
+<h3 style="font-size: 13px; text-transform: uppercase; color: #9AA0AC;">Log in</h3>
+<form method="post">
+  {% csrf_token %}
+  <label for="{{ form.username.id_for_label }}">Username</label>
+  {{ form.username }}
+  <label for="{{ form.password.id_for_label }}">Password</label>
+  <div style="display: flex; gap: 8px; margin-top: 4px;">
+    <div style="flex: 1;">{{ form.password }}</div>
+    <button type="button" class="toggle-btn" onclick="togglePw('{{ form.password.id_for_label }}', this)">Show</button>
+  </div>
+  <button type="submit">Log in</button>
+</form>
+{% if form.errors %}
+  <p style="color: #E85B52; font-size: 13px; margin-top: 10px;">Incorrect username or password.</p>
+{% endif %}
+<p style="margin-top: 20px; font-size: 13px;"><a href="{% url 'signup' %}" style="color: #9AA0AC;">Need an account? Sign up</a></p>
+{% endblock %}

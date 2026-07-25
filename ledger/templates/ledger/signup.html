@@ -1,0 +1,26 @@
+{% extends 'ledger/base.html' %}
+{% block content %}
+<h3 style="font-size: 13px; text-transform: uppercase; color: #9AA0AC;">Create an account</h3>
+<form method="post">
+  {% csrf_token %}
+  <label for="{{ form.username.id_for_label }}">Username</label>
+  {{ form.username }}
+  <label for="{{ form.password1.id_for_label }}">Password</label>
+  <div style="display: flex; gap: 8px; margin-top: 4px;">
+    <div style="flex: 1;">{{ form.password1 }}</div>
+    <button type="button" class="toggle-btn" onclick="togglePw('{{ form.password1.id_for_label }}', this)">Show</button>
+  </div>
+  <label for="{{ form.password2.id_for_label }}">Confirm password</label>
+  <div style="display: flex; gap: 8px; margin-top: 4px;">
+    <div style="flex: 1;">{{ form.password2 }}</div>
+    <button type="button" class="toggle-btn" onclick="togglePw('{{ form.password2.id_for_label }}', this)">Show</button>
+  </div>
+  <button type="submit">Sign up</button>
+</form>
+{% if form.errors %}
+  <ul style="color: #E85B52; font-size: 13px; margin-top: 10px;">
+    {% for field in form %}{% for error in field.errors %}<li>{{ error }}</li>{% endfor %}{% endfor %}
+  </ul>
+{% endif %}
+<p style="margin-top: 20px; font-size: 13px;"><a href="{% url 'login' %}" style="color: #9AA0AC;">Already have an account? Log in</a></p>
+{% endblock %}
