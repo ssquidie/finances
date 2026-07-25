@@ -1,38 +1,19 @@
-"""
-Django settings for finances project.
-
-For more information on this file, see
-https://docs.djangoproject.com/en/1.6/topics/settings/
-
-For the full list of settings and their values, see
-https://docs.djangoproject.com/en/1.6/ref/settings/
-"""
-
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
-BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+from pathlib import Path
 
+import dj_database_url
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/
+BASE_DIR = Path(__file__).resolve().parent.parent
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'fm^*_5m)ug!kw=dp3ahqs$_$majt7ch8rblh@5h@39g(dtc7(p'
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-local-dev-key-change-me')
 
-# SECURITY WARNING: don't run with debug turned on in production!
-import os
+DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
-DEBUG = True
+ALLOWED_HOSTS = [h.strip() for h in os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',') if h.strip()]
 
-TEMPLATE_DEBUG = True
+CSRF_TRUSTED_ORIGINS = [o.strip() for o in os.environ.get('CSRF_TRUSTED_ORIGINS', '').split(',') if o.strip()]
 
-ALLOWED_HOSTS = []
-
-
-# Application definition
-
-INSTALLED_APPS = (
-    'django.contrib.admindocs',
+INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -40,73 +21,74 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'ledger',
-)
+]
 
-# Django requires a list of hosts this site is served from; since users can
-# add new hosts with Pony at any time, we just trust SERVER_NAME (set by
-# Apache) to be the correct hostname. If you want to restrict which virtual
-# hosts your application can run on, disable this middleware and set
-# ALLOWED_HOSTS by hand.
-class AllowedHostsMiddleware:
-    def __init__(self, get_response=None):
-        self.get_response = get_response
-    def process_request(self, request):
-        # Django 1.6
-        global ALLOWED_HOSTS
-        name = request.META.get('SERVER_NAME')
-        if name and name not in ALLOWED_HOSTS:
-            ALLOWED_HOSTS.append(name)
-    def __call__(self, request):
-        # Django 1.11+
-        self.process_request(request)
-        return self.get_response(request)
-MIDDLEWARE_CLASSES = (
-    'finances.settings.AllowedHostsMiddleware',
+MIDDLEWARE = [
+    'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-)
+]
 
 ROOT_URLCONF = 'finances.urls'
 
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+]
+
 WSGI_APPLICATION = 'finances.wsgi.application'
 
-
-# Database
-# https://docs.djangoproject.com/en/1.6/ref/settings/#databases
-
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'OPTIONS': {
-            'read_default_file' : os.path.expanduser('~/.my.cnf'),
-            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
-        },
-        'NAME': 'alahi+alahi',
-    }
+    'default': dj_database_url.config(
+        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
+        conn_max_age=600,
+    )
 }
 
-from django.core.urlresolvers import reverse_lazy
-LOGIN_URL = reverse_lazy('login')
-
-# Internationalization
-# https://docs.djangoproject.com/en/1.6/topics/i18n/
+AUTH_PASSWORD_VALIDATORS = [
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
+]
 
 LANGUAGE_CODE = 'en-us'
-
-TIME_ZONE = 'UTC'
-
+TIME_ZONE = 'America/New_York'
 USE_I18N = True
-
-USE_L10N = True
-
 USE_TZ = True
 
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [BASE_DIR / 'static']
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+STORAGES = {
+    'default': {
+        'BACKEND': 'django.core.files.storage.FileSystemStorage',
+    },
+    'staticfiles': {
+        'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage',
+    },
+}
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/1.6/howto/static-files/
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-STATIC_URL = '/__scripts/django/static/'
+LOGIN_URL = 'login'
+
+SECURE_SSL_REDIRECT = os.environ.get('SECURE_SSL_REDIRECT', 'False') == 'True'
+SESSION_COOKIE_SECURE = os.environ.get('SESSION_COOKIE_SECURE', 'False') == 'True'
+CSRF_COOKIE_SECURE = os.environ.get('CSRF_COOKIE_SECURE', 'False') == 'True'
