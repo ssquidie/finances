@@ -21,16 +21,20 @@
   <span class="dash-value">${{ remaining }}</span>
 </div>
 {% endif %}
-{% if most_frequent %}
+{% if most_frequent_list %}
 <div class="dash-stat accent-amber">
-  <span class="dash-label">Most frequent purchase</span>
-  <span class="dash-value dash-value-text">{{ most_frequent }}</span>
+  <span class="dash-label">Most frequent purchases</span>
+  {% for desc, count in most_frequent_list %}
+  <span class="dash-value dash-value-text">{{ desc }} ({{ count }}x)</span>
+  {% endfor %}
 </div>
 {% endif %}
-{% if most_expensive %}
+{% if most_expensive_list %}
 <div class="dash-stat accent-purple">
-  <span class="dash-label">Most expensive purchase</span>
-  <span class="dash-value dash-value-text">{{ most_expensive.description }} — ${{ most_expensive.cost }}</span>
+  <span class="dash-label">Most expensive purchases</span>
+  {% for e in most_expensive_list %}
+  <span class="dash-value dash-value-text">{{ e.description }} — ${{ e.cost }}</span>
+  {% endfor %}
 </div>
 {% endif %}
 

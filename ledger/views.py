@@ -75,11 +75,10 @@ def dashboard_view(request):
     remaining = (budget.amount - spent) if budget else None
 
     all_entries = Entry.objects.filter(user=request.user)
-    most_expensive = all_entries.order_by('-cost').first()
+    most_expensive_list = list(all_entries.order_by('-cost')[:3])
 
     desc_counts = Counter(e.description.strip().lower() for e in all_entries)
-    most_frequent = desc_counts.most_common(1)
-    most_frequent = most_frequent[0][0] if most_frequent else None
+    most_frequent_list = desc_counts.most_common(3)
 
     donut = None
     if budget and budget.amount:
@@ -124,8 +123,8 @@ def dashboard_view(request):
         'budget': budget,
         'spent': spent,
         'remaining': remaining,
-        'most_expensive': most_expensive,
-        'most_frequent': most_frequent,
+        'most_expensive_list': most_expensive_list,
+        'most_frequent_list': most_frequent_list,
         'budget_form': budget_form,
         'donut': donut,
         'period_label': period_label,
