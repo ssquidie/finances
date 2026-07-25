@@ -38,29 +38,33 @@
 </div>
 {% endif %}
 
-<h3 style="font-size: 13px; text-transform: uppercase; color: #9AA0AC; margin-top: 26px;">Spent in a range</h3>
-<form method="get" style="display: flex; gap: 8px; align-items: flex-end;">
-  <div style="flex:1;">
-    <label>Start</label>
-    <input type="date" name="start" value="{{ range_start }}">
-  </div>
-  <div style="flex:1;">
-    <label>End</label>
-    <input type="date" name="end" value="{{ range_end }}">
-  </div>
-  <button type="submit" style="margin-top: 22px; padding: 12px 16px;">Go</button>
-</form>
-{% if range_total is not None %}
-<div class="stat"><span>Spent {{ range_start }} to {{ range_end }}</span>${{ range_total }}</div>
-{% endif %}
+<details style="margin-top: 26px;">
+  <summary>Spent in a range</summary>
+  <form method="get" style="display: flex; gap: 8px; align-items: flex-end;">
+    <div style="flex:1;">
+      <label>Start</label>
+      <input type="date" name="start" value="{{ range_start }}">
+    </div>
+    <div style="flex:1;">
+      <label>End</label>
+      <input type="date" name="end" value="{{ range_end }}">
+    </div>
+    <button type="submit" style="margin-top: 22px; padding: 12px 16px;">Go</button>
+  </form>
+  {% if range_total is not None %}
+  <div class="stat"><span>Spent {{ range_start }} to {{ range_end }}</span>${{ range_total }}</div>
+  {% endif %}
+</details>
 
-<h3 style="font-size: 13px; text-transform: uppercase; color: #9AA0AC; margin-top: 26px;">Set budget</h3>
-<form method="post">
-  {% csrf_token %}
-  <label for="{{ budget_form.amount.id_for_label }}">Amount</label>
-  {{ budget_form.amount }}
-  <label for="{{ budget_form.period.id_for_label }}">Period</label>
-  {{ budget_form.period }}
-  <button type="submit">Save budget</button>
-</form>
+<details style="margin-top: 14px;">
+  <summary>Set budget</summary>
+  <form method="post">
+    {% csrf_token %}
+    <label for="{{ budget_form.amount.id_for_label }}">Amount</label>
+    {{ budget_form.amount }}
+    <label for="{{ budget_form.period.id_for_label }}">Period</label>
+    {{ budget_form.period }}
+    <button type="submit">Save budget</button>
+  </form>
+</details>
 {% endblock %}
