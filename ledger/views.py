@@ -99,6 +99,17 @@ def dashboard_view(request):
         budget.period if budget else 'weekly', 'week'
     )
 
+    range_start = request.GET.get('start')
+    range_end = request.GET.get('end')
+    range_total = None
+    if range_start or range_end:
+        range_qs = all_entries
+        if range_start:
+            range_qs = range_qs.filter(date__gte=range_start)
+        if range_end:
+            range_qs = range_qs.filter(date__lte=range_end)
+        range_total = range_qs.aggregate(total=Sum('cost'))['total'] or 0
+
     if request.method == 'POST':
         budget_form = BudgetForm(request.POST, instance=budget)
         if budget_form.is_valid():
@@ -118,6 +129,9 @@ def dashboard_view(request):
         'budget_form': budget_form,
         'donut': donut,
         'period_label': period_label,
+        'range_start': range_start or '',
+        'range_end': range_end or '',
+        'range_total': range_total,
     })
 
 
@@ -197,6 +211,8 @@ from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 
 
 def login_view(request):
+    if request.user.is_authenticated():
+        return redirect('entry')
     if request.method == 'POST':
         form = AuthenticationForm(request, data=request.POST)
         if form.is_valid():
@@ -213,6 +229,8 @@ def logout_view(request):
 
 
 def signup_view(request):
+    if request.user.is_authenticated():
+        return redirect('entry')
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
         if form.is_valid():

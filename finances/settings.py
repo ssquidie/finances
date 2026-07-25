@@ -89,7 +89,8 @@ DATABASES = {
     }
 }
 
-LOGIN_URL ='/signin/'
+from django.core.urlresolvers import reverse_lazy
+LOGIN_URL = reverse_lazy('login')
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.6/topics/i18n/
