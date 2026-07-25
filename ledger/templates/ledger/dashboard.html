@@ -15,7 +15,7 @@
   <span class="dash-label">Spent this {{ period_label }}</span>
   <span class="dash-value">${{ spent }}</span>
 </div>
-{% if remaining != None %}
+{% if remaining is not None %}
 <div class="dash-stat {% if remaining < 0 %}accent-red{% else %}accent-teal{% endif %}">
   <span class="dash-label">Remaining</span>
   <span class="dash-value">${{ remaining }}</span>
@@ -33,7 +33,7 @@
 <div class="dash-stat accent-purple">
   <span class="dash-label">Most expensive purchases</span>
   {% for e in most_expensive_list %}
-  <span class="dash-value dash-value-text">{{ e.description }} — ${{ e.cost }}</span>
+  <span class="dash-value dash-value-text">{{ e.description }} — ${{ e.cost }} ({{ e.date }})</span>
   {% endfor %}
 </div>
 {% endif %}
@@ -50,7 +50,7 @@
   </div>
   <button type="submit" style="margin-top: 22px; padding: 12px 16px;">Go</button>
 </form>
-{% if range_total != None %}
+{% if range_total is not None %}
 <div class="stat"><span>Spent {{ range_start }} to {{ range_end }}</span>${{ range_total }}</div>
 {% endif %}
 

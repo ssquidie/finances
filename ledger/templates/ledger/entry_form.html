@@ -12,9 +12,9 @@
 </form>
 
 {% if recent %}
-<h3 style="font-size: 13px; text-transform: uppercase; color: #767C6E; margin-top: 30px;">Just logged</h3>
+<h3 style="font-size: 13px; text-transform: uppercase; color: #9AA0AC; margin-top: 30px;">Just logged</h3>
 {% for e in recent %}
-  <div class="row"><span>{{ e.date }} — {{ e.description }}</span><span class="row-right">${{ e.cost }} <a class="edit-link" href="{% url 'entry_edit' e.pk %}">edit</a></span></div>
+  <div class="row"><span>{{ e.date|date:"M d" }} — {{ e.description }}</span><span class="row-right">${{ e.cost }} <a class="edit-link" href="{% url 'entry_edit' e.pk %}">edit</a></span></div>
 {% endfor %}
 {% endif %}
 {% endblock %}

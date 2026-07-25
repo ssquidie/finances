@@ -1,6 +1,6 @@
 {% extends 'ledger/base.html' %}
 {% block content %}
-<h3 style="font-size: 13px; text-transform: uppercase; color: #767C6E;">Net over a range</h3>
+<h3 style="font-size: 13px; text-transform: uppercase; color: #9AA0AC;">Net over a range</h3>
 <form method="get" style="display: flex; gap: 8px; align-items: flex-end;">
   <div>
     <label>Start</label>
@@ -31,7 +31,7 @@
   </form>
 </details>
 
-<h3 style="font-size: 13px; text-transform: uppercase; color: #767C6E; margin-top: 26px;">Recent income</h3>
+<h3 style="font-size: 13px; text-transform: uppercase; color: #9AA0AC; margin-top: 26px;">Recent income</h3>
 {% for p in profits %}
   <div class="row"><span>{{ p.date }} — {{ p.note|default:"income" }}</span><span class="row-right">${{ p.amount }} <a class="edit-link" href="{% url 'profit_edit' p.pk %}">edit</a></span></div>
 {% empty %}

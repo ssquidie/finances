@@ -1,10 +1,11 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Finances</title>
-<link rel="icon" type="image/png" href="/alahi/favicon.png">
+<link rel="icon" type="image/png" href="{% static 'favicon.png' %}">
 <style>
   :root { color-scheme: dark; }
   body { font-family: monospace; max-width: 430px; margin: 0 auto; background: #1B1F27; color: #E8E6DE; font-size: 17px; }
@@ -66,7 +67,7 @@
 <body>
 <header>
   <a href="{% url 'entry' %}" style="display: flex; align-items: center; gap: 10px;">
-    <img src="/alahi/favicon.png" alt="" width="26" height="26" style="border-radius: 6px;">
+    <img src="{% static 'favicon.png' %}" alt="" width="26" height="26" style="border-radius: 6px;">
     Finances
   </a>
   {% if user.is_authenticated %}
