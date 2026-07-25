@@ -11,4 +11,5 @@ urlpatterns = [
     path('signin/', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),
     path('signup/', views.signup_view, name='signup'),
+    path('import-csv/', views.import_view, name='import_csv'),
 ]

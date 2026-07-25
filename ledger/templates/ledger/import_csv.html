@@ -1,0 +1,20 @@
+{% extends 'ledger/base.html' %}
+{% block content %}
+<h3 style="font-size: 13px; text-transform: uppercase; color: #9AA0AC;">Import CSV (staff only)</h3>
+<form method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  <label>Username to import into</label>
+  <input type="text" name="username" required>
+  <label>Year</label>
+  <input type="number" name="year" required>
+  <label style="display: flex; align-items: center; gap: 8px; text-transform: none; margin-top: 18px; font-size: 15px; color: #E8E6DE;">
+    <input type="checkbox" name="negate" style="width: auto; height: auto;"> Negate cost sign (this sheet records expenses as negative numbers)
+  </label>
+  <label>CSV file</label>
+  <input type="file" name="csv_file" accept=".csv" required style="padding: 10px 12px;">
+  <button type="submit">Import</button>
+</form>
+{% if result %}
+<div class="stat"><span>Result</span>{{ result }}</div>
+{% endif %}
+{% endblock %}

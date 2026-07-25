@@ -1,6 +1,8 @@
+import datetime
 import math
 from collections import Counter
 from datetime import date, timedelta
+from decimal import Decimal, InvalidOperation
 
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.contrib.auth.decorators import login_required
@@ -8,6 +10,8 @@ from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.db.models import Sum
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.cache import never_cache
+
+from django.contrib.auth.models import User
 
 from .forms import BudgetForm, EntryForm, ProfitForm
 from .models import Budget, Entry, Profit
@@ -241,3 +245,75 @@ def signup_view(request):
     else:
         form = UserCreationForm()
     return render(request, 'ledger/signup.html', {'form': form})
+
+
+import csv
+import io
+from django.contrib.admin.views.decorators import staff_member_required
+
+
+@staff_member_required
+def import_view(request):
+    result = None
+    if request.method == 'POST':
+        csv_file = request.FILES.get('csv_file')
+        username = request.POST.get('username', '').strip()
+        year_str = request.POST.get('year', '').strip()
+        negate = request.POST.get('negate') == 'on'
+
+        try:
+            target_user = User.objects.get(username=username)
+            year = int(year_str)
+            decoded = csv_file.read().decode('utf-8')
+            reader = csv.reader(io.StringIO(decoded))
+            next(reader, None)
+            created = 0
+            skipped = 0
+            last_date = None
+            for row in reader:
+                if len(row) < 5:
+                    skipped += 1
+                    continue
+                date_str, desc, cost_str = row[2], row[3], row[4]
+                desc_clean = desc.strip()
+                if not desc_clean or desc_clean.lower() in {'total', 'amount remaining'}:
+                    skipped += 1
+                    continue
+                parsed = None
+                v = date_str.strip()
+                if v:
+                    for fmt in ('%m/%d/%Y', '%Y-%m-%d', '%m/%d/%y'):
+                        try:
+                            parsed = datetime.datetime.strptime(v, fmt).date()
+                            break
+                        except ValueError:
+                            continue
+                    if parsed is None:
+                        try:
+                            md = datetime.datetime.strptime(v, '%m/%d')
+                            parsed = datetime.date(year, md.month, md.day)
+                        except ValueError:
+                            pass
+                if parsed is not None:
+                    last_date = parsed
+                entry_date = parsed or last_date
+                if entry_date is None:
+                    skipped += 1
+                    continue
+                try:
+                    cost = Decimal(cost_str.strip())
+                    if negate:
+                        cost = -cost
+                except (InvalidOperation, AttributeError):
+                    skipped += 1
+                    continue
+                Entry.objects.create(user=target_user, date=entry_date, description=desc_clean, cost=cost)
+                created += 1
+            result = f'Imported {created} entries, skipped {skipped} rows.'
+        except User.DoesNotExist:
+            result = f'No user "{username}" found.'
+        except ValueError:
+            result = 'Year must be a number.'
+        except Exception as e:
+            result = f'Error: {e}'
+    return render(request, 'ledger/import_csv.html', {'result': result})
