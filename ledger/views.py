@@ -116,6 +116,60 @@ def dashboard_view(request):
             range_qs = range_qs.filter(date__lte=range_end)
         range_total = range_qs.aggregate(total=Sum('cost'))['total'] or 0
 
+    expensive_open = request.GET.get('expensive') == 'open'
+    exp_start = request.GET.get('exp_start', '')
+    exp_end = request.GET.get('exp_end', '')
+    exp_store = request.GET.get('exp_store', '')
+    exp_min = request.GET.get('exp_min', '')
+    exp_max = request.GET.get('exp_max', '')
+    exp_sort = request.GET.get('exp_sort', 'desc')
+
+    exp_qs = all_entries
+    if exp_start:
+        exp_qs = exp_qs.filter(date__gte=exp_start)
+    if exp_end:
+        exp_qs = exp_qs.filter(date__lte=exp_end)
+    if exp_store:
+        exp_qs = exp_qs.filter(description__icontains=exp_store)
+    if exp_min:
+        try:
+            exp_qs = exp_qs.filter(cost__gte=Decimal(exp_min))
+        except InvalidOperation:
+            pass
+    if exp_max:
+        try:
+            exp_qs = exp_qs.filter(cost__lte=Decimal(exp_max))
+        except InvalidOperation:
+            pass
+    exp_qs = exp_qs.order_by('cost' if exp_sort == 'asc' else '-cost')
+    expensive_full_list = list(exp_qs[:200])
+
+    frequent_open = request.GET.get('frequent') == 'open'
+    freq_start = request.GET.get('freq_start', '')
+    freq_end = request.GET.get('freq_end', '')
+    freq_min = request.GET.get('freq_min', '')
+    freq_max = request.GET.get('freq_max', '')
+    freq_sort = request.GET.get('freq_sort', 'desc')
+
+    freq_qs = all_entries
+    if freq_start:
+        freq_qs = freq_qs.filter(date__gte=freq_start)
+    if freq_end:
+        freq_qs = freq_qs.filter(date__lte=freq_end)
+    if freq_min:
+        try:
+            freq_qs = freq_qs.filter(cost__gte=Decimal(freq_min))
+        except InvalidOperation:
+            pass
+    if freq_max:
+        try:
+            freq_qs = freq_qs.filter(cost__lte=Decimal(freq_max))
+        except InvalidOperation:
+            pass
+    freq_counts = Counter(e.description.strip().lower() for e in freq_qs)
+    frequent_full_list = freq_counts.most_common() if freq_sort == 'desc' else sorted(freq_counts.items(), key=lambda x: x[1])
+    frequent_full_list = frequent_full_list[:200]
+
     if request.method == 'POST':
         budget_form = BudgetForm(request.POST, instance=budget)
         if budget_form.is_valid():
@@ -138,6 +192,14 @@ def dashboard_view(request):
         'range_start': range_start or '',
         'range_end': range_end or '',
         'range_total': range_total,
+        'expensive_open': expensive_open,
+        'exp_start': exp_start, 'exp_end': exp_end, 'exp_store': exp_store,
+        'exp_min': exp_min, 'exp_max': exp_max, 'exp_sort': exp_sort,
+        'expensive_full_list': expensive_full_list,
+        'frequent_open': frequent_open,
+        'freq_start': freq_start, 'freq_end': freq_end,
+        'freq_min': freq_min, 'freq_max': freq_max, 'freq_sort': freq_sort,
+        'frequent_full_list': frequent_full_list,
     })
 
 
