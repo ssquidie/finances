@@ -50,7 +50,8 @@
   .accent-purple .dash-value { color: #A79CF0; }
   .donut-wrap { display: flex; justify-content: center; margin-top: 8px; margin-bottom: 4px; }
   .toggle-btn { background: #242938; color: #E8E6DE; border: 1px solid #3A4152; padding: 12px 14px; cursor: pointer; font-family: monospace; font-size: 15px; white-space: nowrap; margin-top: 6px; }
-  .dash-btn { text-decoration: none; cursor: pointer; }
+  .dash-btn { text-decoration: none; cursor: pointer; transition: transform 0.15s ease, box-shadow 0.15s ease; }
+  .dash-btn:hover, .dash-btn:active { transform: scale(1.02); box-shadow: 0 6px 18px rgba(0,0,0,0.35); }
   dialog { background: #1B1F27; color: #E8E6DE; border: 1px solid #3A4152; max-width: 380px; width: 90vw; padding: 20px; font-family: monospace; }
   dialog::backdrop { background: rgba(0,0,0,0.6); }
   dialog label { display: block; font-size: 12px; text-transform: uppercase; color: #9AA0AC; margin-top: 12px; }
